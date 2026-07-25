@@ -17,18 +17,14 @@ st.set_page_config(
 )
 
 # ============================================================
-# MOBILE-FIRST CSS (prevents overflow)
+# MOBILE CSS
 # ============================================================
 st.markdown("""
 <style>
-    html, body, [class*="css"] {
-        font-size: 16px !important;
-        line-height: 1.45 !important;
-    }
-    h1 { font-size: 1.8rem !important; margin-bottom: 0.3rem !important; }
+    html, body, [class*="css"] { font-size: 16px !important; line-height: 1.45 !important; }
+    h1 { font-size: 1.8rem !important; }
     h2 { font-size: 1.4rem !important; margin-top: 1.6rem !important; }
-    h3 { font-size: 1.25rem !important; margin-top: 1.2rem !important; }
-    
+    h3 { font-size: 1.25rem !important; }
     .block-container {
         padding-top: 0.8rem !important;
         padding-bottom: 5rem !important;
@@ -41,10 +37,7 @@ st.markdown("""
 st.title("🇮🇪 Ireland + 🇬🇧 United Kingdom")
 st.caption(f"Common Travel Area • Absolute numbers | {datetime.now().strftime('%Y-%m-%d')}")
 
-st.warning(
-    "Census data are the best official figures but are not perfect "
-    "(non-response and undercounting occur)."
-)
+st.warning("Census data are the best official figures but are not perfect (non-response and undercounting occur).")
 
 # ============================================================
 # BASE NUMBERS
@@ -92,7 +85,7 @@ st.markdown(f"""
 st.caption("Source: CSO 2022 + ONS/Scotland/NISRA 2021–22")
 
 # ============================================================
-# 2. PLACE OF BIRTH
+# 2. PLACE OF BIRTH  (fixed labels)
 # ============================================================
 st.header("2. Place of Birth")
 
@@ -114,9 +107,9 @@ fig2 = px.pie(
 fig2.update_traces(textinfo="percent", textfont_size=15)
 fig2.update_layout(
     height=450,
-    margin=dict(t=40, b=110, l=5, r=5),
+    margin=dict(t=40, b=120, l=5, r=5),
     showlegend=True,
-    legend=dict(orientation="h", y=-0.2, x=0.5, xanchor="center", font=dict(size=13))
+    legend=dict(orientation="h", y=-0.22, x=0.5, xanchor="center", font=dict(size=13))
 )
 st.plotly_chart(fig2, use_container_width=True)
 
@@ -136,14 +129,15 @@ st.caption("Source: CSO 2022 (≈80% Irish-born) • ONS (≈16% foreign-born)")
 # ============================================================
 st.header("3. Religion")
 
-# Correct Ireland numbers (CSO 2022)
-ie_catholic = 3_515_861   # 69%
+# Ireland – correct CSO 2022 numbers
+ie_catholic = 3_515_861
 ie_none = 736_210
 ie_muslim = 81_930
 ie_hindu = 33_043
 ie_sikh = 2_000
+ie_other = IE_POP - (ie_catholic + ie_none + ie_muslim + ie_hindu + ie_sikh)  # residual
 
-# UK numbers
+# UK
 uk_christian = int(UK_POP * 0.462)
 uk_none = int(UK_POP * 0.37)
 uk_muslim = int(UK_POP * 0.06)
@@ -152,23 +146,23 @@ uk_sikh = int(UK_POP * 0.009)
 uk_catholic = int(UK_POP * 0.08)
 uk_other_christian = uk_christian - uk_catholic
 
-# --- Ireland ---
+# --- Ireland (NOW CORRECT – includes residual so % are real) ---
 st.subheader("In Ireland")
 ie_rel = pd.DataFrame({
-    "Religion": ["Catholic", "No religion", "Muslim", "Hindu", "Sikh"],
-    "People": [ie_catholic, ie_none, ie_muslim, ie_hindu, ie_sikh]
+    "Religion": ["Catholic", "No religion", "Muslim", "Hindu", "Sikh", "Other / Not stated"],
+    "People": [ie_catholic, ie_none, ie_muslim, ie_hindu, ie_sikh, ie_other]
 })
 fig_ie = px.pie(
     ie_rel, values="People", names="Religion",
     title="Religion in Ireland (CSO 2022)",
-    color_discrete_sequence=["#169B62", "#a8d5a2", "#7bc96f", "#4caf50", "#2e7d32"]
+    color_discrete_sequence=["#169B62", "#a8d5a2", "#7bc96f", "#4caf50", "#2e7d32", "#cccccc"]
 )
-fig_ie.update_traces(textinfo="percent", textfont_size=15)
+fig_ie.update_traces(textinfo="percent", textfont_size=14)
 fig_ie.update_layout(
-    height=440,
-    margin=dict(t=40, b=100, l=5, r=5),
+    height=460,
+    margin=dict(t=40, b=120, l=5, r=5),
     showlegend=True,
-    legend=dict(orientation="h", y=-0.18, x=0.5, xanchor="center", font=dict(size=13))
+    legend=dict(orientation="h", y=-0.22, x=0.5, xanchor="center", font=dict(size=12))
 )
 st.plotly_chart(fig_ie, use_container_width=True)
 
@@ -177,11 +171,12 @@ st.markdown(f"""
 - No religion: **{ie_none:,}**  
 - Muslim: **{ie_muslim:,}**  
 - Hindu: **{ie_hindu:,}**  
-- Sikh: **{ie_sikh:,}**
+- Sikh: **{ie_sikh:,}**  
+- Other / Not stated: **{ie_other:,}**
 """)
-st.caption("Source: CSO Census 2022 Profile 5")
+st.caption("Source: CSO Census 2022 Profile 5. Percentages now match the full population.")
 
-# --- United Kingdom (Catholics separate + BLUE colours) ---
+# --- United Kingdom ---
 st.subheader("In the United Kingdom")
 uk_rel = pd.DataFrame({
     "Religion": ["Catholic", "Christian other", "No religion", "Muslim", "Hindu", "Sikh"],
@@ -214,7 +209,7 @@ st.caption("Source: ONS 2021 + Scotland 2022 + NISRA 2021")
 # --- Combined ---
 st.subheader("Common Travel Area Combined")
 combined_catholic = ie_catholic + uk_catholic
-combined_other = uk_other_christian
+combined_other_chr = uk_other_christian
 combined_none = ie_none + uk_none
 combined_muslim = ie_muslim + uk_muslim
 combined_hindu = ie_hindu + uk_hindu
@@ -222,7 +217,7 @@ combined_sikh = ie_sikh + uk_sikh
 
 comb_rel = pd.DataFrame({
     "Religion": ["Catholic", "Christian other", "No religion", "Muslim", "Hindu", "Sikh"],
-    "People": [combined_catholic, combined_other, combined_none, combined_muslim, combined_hindu, combined_sikh]
+    "People": [combined_catholic, combined_other_chr, combined_none, combined_muslim, combined_hindu, combined_sikh]
 })
 fig_comb = px.pie(
     comb_rel, values="People", names="Religion",
@@ -240,7 +235,7 @@ st.plotly_chart(fig_comb, use_container_width=True)
 
 st.markdown(f"""
 - Catholic: **{combined_catholic:,}**  
-- Christian other: **{combined_other:,}**  
+- Christian other: **{combined_other_chr:,}**  
 - No religion: **{combined_none:,}**  
 - Muslim: **{combined_muslim:,}**  
 - Hindu: **{combined_hindu:,}**  
@@ -249,7 +244,7 @@ st.markdown(f"""
 st.caption("Catholics from both countries combined • Muslims from both countries combined")
 
 # ============================================================
-# 4. PLACES OF WORSHIP (UK = BLUE, Ireland = GREEN)
+# 4. PLACES OF WORSHIP
 # ============================================================
 st.header("4. Places of Worship (Estimates)")
 
