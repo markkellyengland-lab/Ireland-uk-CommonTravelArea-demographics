@@ -85,7 +85,7 @@ st.markdown(f"""
 st.caption("Source: CSO 2022 + ONS/Scotland/NISRA 2021–22")
 
 # ============================================================
-# 2. PLACE OF BIRTH  (fixed labels)
+# 2. PLACE OF BIRTH
 # ============================================================
 st.header("2. Place of Birth")
 
@@ -135,7 +135,7 @@ ie_none = 736_210
 ie_muslim = 81_930
 ie_hindu = 33_043
 ie_sikh = 2_000
-ie_other = IE_POP - (ie_catholic + ie_none + ie_muslim + ie_hindu + ie_sikh)  # residual
+ie_other = IE_POP - (ie_catholic + ie_none + ie_muslim + ie_hindu + ie_sikh)
 
 # UK
 uk_christian = int(UK_POP * 0.462)
@@ -146,35 +146,54 @@ uk_sikh = int(UK_POP * 0.009)
 uk_catholic = int(UK_POP * 0.08)
 uk_other_christian = uk_christian - uk_catholic
 
-# --- Ireland (NOW CORRECT – includes residual so % are real) ---
+# --- Ireland (clean – no overlapping tiny labels) ---
 st.subheader("In Ireland")
+
 ie_rel = pd.DataFrame({
-    "Religion": ["Catholic", "No religion", "Muslim", "Hindu", "Sikh", "Other / Not stated"],
-    "People": [ie_catholic, ie_none, ie_muslim, ie_hindu, ie_sikh, ie_other]
+    "Religion": ["Catholic", "No religion", "Other / Not stated", "Muslim", "Hindu", "Sikh"],
+    "People": [ie_catholic, ie_none, ie_other, ie_muslim, ie_hindu, ie_sikh]
 })
+
 fig_ie = px.pie(
-    ie_rel, values="People", names="Religion",
+    ie_rel,
+    values="People",
+    names="Religion",
     title="Religion in Ireland (CSO 2022)",
-    color_discrete_sequence=["#169B62", "#a8d5a2", "#7bc96f", "#4caf50", "#2e7d32", "#cccccc"]
+    color_discrete_sequence=["#169B62", "#a8d5a2", "#cccccc", "#7bc96f", "#4caf50", "#2e7d32"],
+    hole=0.35
 )
-fig_ie.update_traces(textinfo="percent", textfont_size=14)
+
+fig_ie.update_traces(
+    textinfo="percent",
+    textfont_size=15,
+    textposition="inside",
+    insidetextorientation="horizontal"
+)
+
 fig_ie.update_layout(
     height=460,
-    margin=dict(t=40, b=120, l=5, r=5),
+    margin=dict(t=40, b=130, l=5, r=5),
     showlegend=True,
-    legend=dict(orientation="h", y=-0.22, x=0.5, xanchor="center", font=dict(size=12))
+    legend=dict(
+        orientation="h",
+        y=-0.25,
+        x=0.5,
+        xanchor="center",
+        font=dict(size=13)
+    )
 )
+
 st.plotly_chart(fig_ie, use_container_width=True)
 
 st.markdown(f"""
 - Catholic: **{ie_catholic:,}** (69%)  
 - No religion: **{ie_none:,}**  
+- Other / Not stated: **{ie_other:,}**  
 - Muslim: **{ie_muslim:,}**  
 - Hindu: **{ie_hindu:,}**  
-- Sikh: **{ie_sikh:,}**  
-- Other / Not stated: **{ie_other:,}**
+- Sikh: **{ie_sikh:,}**
 """)
-st.caption("Source: CSO Census 2022 Profile 5. Percentages now match the full population.")
+st.caption("Source: CSO Census 2022 Profile 5. Percentages are against the full population.")
 
 # --- United Kingdom ---
 st.subheader("In the United Kingdom")
