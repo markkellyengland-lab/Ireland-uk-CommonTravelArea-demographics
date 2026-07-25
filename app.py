@@ -17,19 +17,36 @@ st.set_page_config(
 )
 
 # ============================================================
-# MOBILE CSS
+# MOBILE CSS – title fully visible
 # ============================================================
 st.markdown("""
 <style>
-    html, body, [class*="css"] { font-size: 16px !important; line-height: 1.45 !important; }
-    h1 { font-size: 1.8rem !important; }
-    h2 { font-size: 1.4rem !important; margin-top: 1.6rem !important; }
-    h3 { font-size: 1.25rem !important; }
+    html, body, [class*="css"] { 
+        font-size: 16px !important; 
+        line-height: 1.45 !important; 
+    }
+    h1 { 
+        font-size: 1.7rem !important; 
+        margin-top: 0.8rem !important;
+        margin-bottom: 0.4rem !important;
+        line-height: 1.3 !important;
+    }
+    h2 { 
+        font-size: 1.4rem !important; 
+        margin-top: 1.6rem !important; 
+    }
+    h3 { 
+        font-size: 1.25rem !important; 
+    }
     .block-container {
-        padding-top: 0.8rem !important;
+        padding-top: 1.8rem !important;   /* extra space so title is fully visible */
         padding-bottom: 5rem !important;
         padding-left: 0.7rem !important;
         padding-right: 0.7rem !important;
+    }
+    @media (max-width: 600px) {
+        h1 { font-size: 1.55rem !important; }
+        .block-container { padding-top: 2rem !important; }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -146,7 +163,7 @@ uk_sikh = int(UK_POP * 0.009)
 uk_catholic = int(UK_POP * 0.08)
 uk_other_christian = uk_christian - uk_catholic
 
-# --- Ireland (clean – no overlapping tiny labels) ---
+# --- Ireland ---
 st.subheader("In Ireland")
 
 ie_rel = pd.DataFrame({
